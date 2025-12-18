@@ -1,0 +1,12 @@
+{
+  "name": "metronome-remote",
+  "version": "1.0.0",
+  "description": "Minimal metronome with WebSocket remote control and room support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.0"
+  }
+}

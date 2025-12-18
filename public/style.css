@@ -1,0 +1,223 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a1a;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.room-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.room-label {
+    color: #888;
+}
+
+#room-id {
+    font-family: 'Monaco', 'Courier New', monospace;
+    background: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+#copy-link {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#copy-link:hover {
+    background: #0056b3;
+}
+
+.connection-status {
+    font-size: 12px;
+    color: #888;
+}
+
+.connection-status.connected {
+    color: #28a745;
+}
+
+.beat-display {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.beat-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #333;
+    border: 4px solid #555;
+    transition: all 0.1s ease;
+}
+
+.beat-circle.active {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+    transform: scale(1.1);
+}
+
+.bpm-display {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.bpm-value {
+    font-size: 48px;
+    font-weight: bold;
+    color: #ff6b35;
+}
+
+.bpm-label {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.control-btn:hover {
+    background: #444;
+}
+
+.control-btn.primary {
+    background: #ff6b35;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.control-btn.primary:hover {
+    background: #e55a2b;
+}
+
+.control-btn.primary.playing {
+    background: #dc3545;
+}
+
+.control-btn.primary.playing:hover {
+    background: #c82333;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group label {
+    font-size: 14px;
+    color: #ccc;
+}
+
+#bpm-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #333;
+    outline: none;
+}
+
+#bpm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b35;
+    cursor: pointer;
+}
+
+#bpm-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b35;
+    cursor: pointer;
+    border: none;
+}
+
+#time-signature {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#tap-tempo {
+    padding: 10px 15px;
+    font-size: 14px;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .beat-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .bpm-value {
+        font-size: 36px;
+    }
+}
