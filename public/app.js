@@ -41,6 +41,7 @@ class Metronome {
             timeSignature: document.getElementById('time-signature'),
             tapTempo: document.getElementById('tap-tempo'),
             beatCircle: document.getElementById('beat-circle'),
+            beatNumber: document.getElementById('beat-number'),
             connectionStatus: document.getElementById('connection-status'),
             copyLink: document.getElementById('copy-link')
         };
@@ -181,6 +182,10 @@ class Metronome {
     }
 
     tick() {
+        // Display 1-based beat number (1, 2, 3, 4 instead of 0, 1, 2, 3)
+        const displayBeat = this.beatCount + 1;
+        this.elements.beatNumber.textContent = displayBeat;
+
         this.playClick();
         this.visualBeat();
 
