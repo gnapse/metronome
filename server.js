@@ -3,6 +3,19 @@ const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
 const url = require('url');
+const os = require('os');
+
+function getLocalNetworkIP() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return null;
+}
 
 const server = http.createServer((req, res) => {
   const pathname = url.parse(req.url).pathname;
@@ -68,7 +81,7 @@ wss.on('connection', (ws, req) => {
   ws.roomId = roomId;
 
   // Send current state to new client
-  ws.send(JSON.stringify({ type: 'state', ...room.state }));
+  ws.send(JSON.stringify({ type: 'state', networkIP: getLocalNetworkIP(), ...room.state }));
 
   ws.on('message', (data) => {
     try {

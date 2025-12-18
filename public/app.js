@@ -8,6 +8,7 @@ class Metronome {
         this.beatCount = 0;
         this.intervalId = null;
         this.roomId = null;
+        this.networkIP = null;
         this.lastTapTime = null;
         this.tapTimes = [];
 
@@ -89,7 +90,14 @@ class Metronome {
         this.elements.tapTempo.onclick = () => this.handleTapTempo();
 
         this.elements.copyLink.onclick = () => {
-            navigator.clipboard.writeText(window.location.href);
+            let linkUrl = window.location.href;
+
+            // Use network IP if current host is localhost and we have a network IP
+            if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && this.networkIP) {
+                linkUrl = window.location.href.replace(window.location.hostname, this.networkIP);
+            }
+
+            navigator.clipboard.writeText(linkUrl);
             this.elements.copyLink.textContent = 'Copied!';
             setTimeout(() => {
                 this.elements.copyLink.textContent = 'Copy Link';
@@ -99,6 +107,10 @@ class Metronome {
 
     updateFromRemote(state) {
         // Update local state without triggering broadcast
+        if (state.networkIP !== undefined) {
+            this.networkIP = state.networkIP;
+        }
+
         if (state.bpm !== undefined) {
             this.bpm = state.bpm;
             this.elements.bpmValue.textContent = this.bpm;
