@@ -212,6 +212,135 @@ header {
     font-size: 14px;
 }
 
+/* Desktop/Large screen layout redesign */
+@media (min-width: 768px) {
+    body {
+        align-items: stretch;
+    }
+
+    .container {
+        max-width: none;
+        width: 100%;
+        height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 20px;
+    }
+
+    header {
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        gap: 40px;
+    }
+
+    .metronome-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        width: 100%;
+        max-width: 1000px;
+        padding: 20px 0;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        min-width: 200px;
+    }
+
+    .beat-display {
+        justify-content: center;
+        margin-bottom: 0;
+    }
+
+    .beat-circle {
+        width: 300px;
+        height: 300px;
+    }
+
+    .beat-number {
+        font-size: 96px;
+    }
+
+    .bpm-display {
+        margin-bottom: 0;
+        text-align: center;
+    }
+
+    .bpm-value {
+        font-size: 72px;
+    }
+
+    .control-btn {
+        padding: 20px 24px;
+        font-size: 18px;
+    }
+
+    .control-btn.primary {
+        font-size: 24px;
+        min-width: 120px;
+    }
+
+    #bpm-slider {
+        width: 200px;
+    }
+
+    #time-signature {
+        min-width: 100px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .beat-circle {
+        width: 400px;
+        height: 400px;
+    }
+
+    .beat-number {
+        font-size: 128px;
+    }
+
+    .bpm-value {
+        font-size: 96px;
+    }
+}
+
+@media (min-width: 1600px) {
+    .beat-circle {
+        width: 500px;
+        height: 500px;
+    }
+
+    .beat-number {
+        font-size: 160px;
+    }
+
+    .bpm-value {
+        font-size: 120px;
+    }
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 15px;
@@ -226,6 +355,10 @@ header {
     .beat-circle {
         width: 100px;
         height: 100px;
+    }
+
+    .beat-number {
+        font-size: 28px;
     }
 
     .bpm-value {
