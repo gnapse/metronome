@@ -15,6 +15,12 @@ class Metronome {
         this.tapTimes = [];
 
         this.initRoom();
+
+        // Apply mode-specific styling
+        if (this.mode === 'remote') {
+            document.body.classList.add('remote-mode');
+        }
+
         this.initElements();
         this.initAudio();
         this.initWebSocket();
@@ -26,11 +32,13 @@ class Metronome {
     initRoom() {
         const urlParams = new URLSearchParams(window.location.search);
         this.roomId = urlParams.get('room');
+        this.mode = urlParams.get('mode') || 'normal';
 
         if (!this.roomId) {
             // Generate random room ID
             this.roomId = Math.random().toString(36).substring(2, 8);
-            window.location.href = `${window.location.origin}${window.location.pathname}?room=${this.roomId}`;
+            const modeParam = this.mode === 'remote' ? '&mode=remote' : '';
+            window.location.href = `${window.location.origin}${window.location.pathname}?room=${this.roomId}${modeParam}`;
             return;
         }
 
@@ -53,12 +61,26 @@ class Metronome {
             subdivisionDisplay: document.getElementById('subdivision-display'),
             subdivisionCircles: document.querySelectorAll('.subdivision-circle'),
             connectionStatus: document.getElementById('connection-status'),
-            copyLink: document.getElementById('copy-link')
+            copyLink: document.getElementById('copy-link'),
+            modeIndicator: document.getElementById('mode-indicator')
         };
+
+        // Set initial button text and mode indicator based on mode
+        this.elements.copyLink.textContent = this.mode === 'normal' ? 'Copy Remote Link' : 'Copy Link';
+
+        if (this.mode === 'remote') {
+            this.elements.modeIndicator.textContent = '(Remote Control)';
+            this.elements.modeIndicator.className = 'mode-indicator remote';
+        } else {
+            this.elements.modeIndicator.textContent = '';
+            this.elements.modeIndicator.className = 'mode-indicator';
+        }
     }
 
     initAudio() {
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.mode !== 'remote') {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
     }
 
     initWebSocket() {
@@ -88,7 +110,16 @@ class Metronome {
     }
 
     attachEventListeners() {
-        this.elements.beatCircle.onclick = () => this.togglePlay();
+        // More robust event handling for mobile and desktop
+        const handleBeatCircleClick = () => {
+            this.togglePlay();
+        };
+
+        this.elements.beatCircle.onclick = handleBeatCircleClick;
+        this.elements.beatCircle.ontouchend = (e) => {
+            e.preventDefault();
+            handleBeatCircleClick();
+        };
 
         this.elements.bpmSlider.oninput = (e) => {
             this.setBpm(parseInt(e.target.value));
@@ -112,15 +143,23 @@ class Metronome {
         this.elements.copyLink.onclick = () => {
             let linkUrl = window.location.href;
 
+            // Generate remote control link if in normal mode
+            if (this.mode === 'normal') {
+                const url = new URL(window.location.href);
+                url.searchParams.set('mode', 'remote');
+                linkUrl = url.toString();
+            }
+
             // Use network IP if current host is localhost and we have a network IP
             if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && this.networkIP) {
-                linkUrl = window.location.href.replace(window.location.hostname, this.networkIP);
+                linkUrl = linkUrl.replace(window.location.hostname, this.networkIP);
             }
 
             navigator.clipboard.writeText(linkUrl);
+            const originalText = this.mode === 'normal' ? 'Copy Remote Link' : 'Copy Link';
             this.elements.copyLink.textContent = 'Copied!';
             setTimeout(() => {
-                this.elements.copyLink.textContent = 'Copy Link';
+                this.elements.copyLink.textContent = originalText;
             }, 1000);
         };
     }
@@ -212,7 +251,7 @@ class Metronome {
     }
 
     startMetronome() {
-        if (this.audioContext.state === 'suspended') {
+        if (this.audioContext && this.audioContext.state === 'suspended') {
             this.audioContext.resume();
         }
 
@@ -261,17 +300,30 @@ class Metronome {
     }
 
     updateBeatDisplay() {
-        if (this.isPlaying) {
-            // Show beat number when playing
-            const displayBeat = this.beatCount + 1;
-            this.elements.beatNumber.innerHTML = displayBeat;
+        if (this.mode === 'remote') {
+            // In remote mode, always show play/stop indicator
+            if (this.isPlaying) {
+                this.elements.beatNumber.innerHTML = 'STOP';
+            } else {
+                this.elements.beatNumber.innerHTML = '<div class="play-triangle"></div>';
+            }
         } else {
-            // Show play triangle when stopped
-            this.elements.beatNumber.innerHTML = '<div class="play-triangle"></div>';
+            // Normal mode behavior
+            if (this.isPlaying) {
+                // Show beat number when playing
+                const displayBeat = this.beatCount + 1;
+                this.elements.beatNumber.innerHTML = displayBeat;
+            } else {
+                // Show play triangle when stopped
+                this.elements.beatNumber.innerHTML = '<div class="play-triangle"></div>';
+            }
         }
     }
 
     updateSubdivisionCircles() {
+        if (this.mode === 'remote') {
+            return; // Skip subdivision updates in remote mode
+        }
         const multiplier = this.getSubdivisionMultiplier();
         const currentSubdivision = this.subdivisionCount % multiplier;
 
@@ -300,16 +352,16 @@ class Metronome {
         // Check if this is a main beat (quarter note)
         const isMainBeat = this.subdivisionCount % subdivisionMultiplier === 0;
 
-        if (isMainBeat) {
-            // Update beat display only on main beats
+        if (isMainBeat && this.mode !== 'remote') {
+            // Update beat display only on main beats in normal mode
             this.visualBeat();
         }
 
-        // Play different sounds for main beats vs subdivisions
+        // Play different sounds for main beats vs subdivisions (playClick handles remote mode check)
         this.playClick(isMainBeat);
 
-        // Update subdivision circles if visible
-        if (this.elements.subdivisionDisplay.classList.contains('visible')) {
+        // Update subdivision circles if visible and not in remote mode
+        if (this.elements.subdivisionDisplay.classList.contains('visible') && this.mode !== 'remote') {
             this.updateSubdivisionCircles();
         }
 
@@ -324,6 +376,10 @@ class Metronome {
     }
 
     playClick(isMainBeat = true) {
+        if (this.mode === 'remote' || !this.audioContext) {
+            return; // Skip audio in remote mode
+        }
+
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
 
@@ -348,6 +404,9 @@ class Metronome {
     }
 
     visualBeat() {
+        if (this.mode === 'remote') {
+            return; // Skip visual updates in remote mode
+        }
         this.elements.beatCircle.classList.add('active');
         setTimeout(() => {
             this.elements.beatCircle.classList.remove('active');

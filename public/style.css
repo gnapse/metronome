@@ -70,6 +70,17 @@ header {
     color: #28a745;
 }
 
+.mode-indicator {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.mode-indicator.remote {
+    color: #4ECDC4;
+    font-weight: 500;
+}
+
 .beat-display {
     display: flex;
     justify-content: center;
@@ -470,6 +481,50 @@ header {
         margin-top: 50px;
     }
 
+}
+
+/* Remote mode styles - hide visual metronome elements but keep beat circle as start/stop */
+.remote-mode .subdivision-display {
+    display: none !important;
+}
+
+/* Ensure beat circle is visible and clickable in remote mode */
+.remote-mode .beat-display {
+    display: flex !important;
+    justify-content: center;
+    margin-bottom: 30px;
+    pointer-events: auto;
+}
+
+.remote-mode .metronome-display {
+    pointer-events: auto;
+}
+
+.remote-mode .beat-circle {
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    position: relative;
+    z-index: 10;
+}
+
+/* In remote mode, beat circle shows play triangle when stopped, nothing when playing */
+.remote-mode .beat-circle.active {
+    background: #ff6b35;
+    border-color: #ff6b35;
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+    transform: scale(1.05);
+}
+
+/* Adjust layout for remote mode */
+.remote-mode main {
+    justify-content: flex-start;
+    padding-top: 40px;
+}
+
+.remote-mode .controls {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 @media (max-width: 480px) {
