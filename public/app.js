@@ -20,6 +20,7 @@ class Metronome {
         this.initWebSocket();
         this.attachEventListeners();
         this.updateBeatDisplay();
+        this.updateSubdivisionDisplay();
     }
 
     initRoom() {
@@ -49,6 +50,8 @@ class Metronome {
             subdivisions: document.getElementById('subdivisions'),
             beatCircle: document.getElementById('beat-circle'),
             beatNumber: document.getElementById('beat-number'),
+            subdivisionDisplay: document.getElementById('subdivision-display'),
+            subdivisionCircles: document.querySelectorAll('.subdivision-circle'),
             connectionStatus: document.getElementById('connection-status'),
             copyLink: document.getElementById('copy-link')
         };
@@ -215,6 +218,29 @@ class Metronome {
 
         this.elements.beatCircle.classList.remove('active');
         this.updateBeatDisplay();
+        this.updateSubdivisionDisplay();
+    }
+
+    updateSubdivisionDisplay() {
+        const multiplier = this.getSubdivisionMultiplier();
+
+        if (multiplier === 1) {
+            // Quarter notes - hide subdivision display
+            this.elements.subdivisionDisplay.classList.remove('visible');
+        } else {
+            // Show subdivision display
+            this.elements.subdivisionDisplay.classList.add('visible');
+
+            // Show only the needed circles
+            this.elements.subdivisionCircles.forEach((circle, index) => {
+                if (index < multiplier) {
+                    circle.style.display = 'block';
+                } else {
+                    circle.style.display = 'none';
+                }
+                circle.classList.remove('active');
+            });
+        }
     }
 
     updateBeatDisplay() {
@@ -225,6 +251,28 @@ class Metronome {
         } else {
             // Show play triangle when stopped
             this.elements.beatNumber.innerHTML = '<div class="play-triangle"></div>';
+        }
+    }
+
+    updateSubdivisionCircles() {
+        const multiplier = this.getSubdivisionMultiplier();
+        const currentSubdivision = this.subdivisionCount % multiplier;
+
+        // Remove active class from all circles
+        this.elements.subdivisionCircles.forEach(circle => {
+            circle.classList.remove('active');
+        });
+
+        // Add active class to current subdivision circle
+        if (this.elements.subdivisionCircles[currentSubdivision]) {
+            this.elements.subdivisionCircles[currentSubdivision].classList.add('active');
+
+            // Remove active class after animation
+            setTimeout(() => {
+                if (this.elements.subdivisionCircles[currentSubdivision]) {
+                    this.elements.subdivisionCircles[currentSubdivision].classList.remove('active');
+                }
+            }, 100);
         }
     }
 
@@ -242,6 +290,11 @@ class Metronome {
 
         // Play different sounds for main beats vs subdivisions
         this.playClick(isMainBeat);
+
+        // Update subdivision circles if visible
+        if (this.elements.subdivisionDisplay.classList.contains('visible')) {
+            this.updateSubdivisionCircles();
+        }
 
         // Advance subdivision count
         this.subdivisionCount++;
@@ -315,6 +368,7 @@ class Metronome {
         }
 
         this.broadcastState();
+        this.updateSubdivisionDisplay();
     }
 
     handleTapTempo() {
