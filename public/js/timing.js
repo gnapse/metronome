@@ -83,17 +83,11 @@ export const TimingService = {
 	 * Calculate tap tempo BPM from array of tap intervals
 	 */
 	calculateTapTempoBpm(tapTimes) {
-		if (tapTimes.length < 2) return null;
+		if (tapTimes.length < 1) return null;
 
-		// Calculate intervals between taps
-		const intervals = [];
-		for (let i = 1; i < tapTimes.length; i++) {
-			intervals.push(tapTimes[i] - tapTimes[i - 1]);
-		}
-
-		// Calculate average interval
+		// tapTimes already contains intervals, use them directly
 		const avgInterval =
-			intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
+			tapTimes.reduce((sum, interval) => sum + interval, 0) / tapTimes.length;
 
 		// Convert to BPM (60000ms = 1 minute)
 		const bpm = 60000 / avgInterval;
