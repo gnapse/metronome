@@ -1,606 +1,586 @@
+/**
+ * Enhanced CSS with Custom Properties and Responsive Design
+ * Organized using CSS variables for better maintainability and theming
+ */
+
+/* CSS Custom Properties - Design System */
+:root {
+  /* Color palette */
+  --color-primary: #ff6b35;
+  --color-primary-hover: #e55a2b;
+  --color-primary-dark: #dc3545;
+  --color-primary-dark-hover: #c82333;
+
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #333;
+  --color-bg-tertiary: #404040;
+  --color-bg-light: #555;
+  --color-bg-lighter: #666;
+
+  --color-text-primary: #fff;
+  --color-text-secondary: #888;
+  --color-text-muted: #dee2e6;
+
+  --color-success: #28a745;
+  --color-info: #4ECDC4;
+  --color-info-hover: #45B7B8;
+
+  /* Beat circle sizes - Responsive design tokens */
+  --beat-size-mobile: 120px;
+  --beat-size-tablet: 300px;
+  --beat-size-desktop: 400px;
+  --beat-size-large: 500px;
+
+  /* Beat number font sizes */
+  --beat-font-mobile: 36px;
+  --beat-font-tablet: 96px;
+  --beat-font-desktop: 128px;
+  --beat-font-large: 160px;
+
+  /* Play triangle sizes */
+  --triangle-mobile-left: 20px;
+  --triangle-mobile-side: 15px;
+  --triangle-mobile-margin: 5px;
+
+  --triangle-tablet-left: 40px;
+  --triangle-tablet-side: 30px;
+  --triangle-tablet-margin: 10px;
+
+  --triangle-desktop-left: 50px;
+  --triangle-desktop-side: 40px;
+  --triangle-desktop-margin: 12px;
+
+  --triangle-large-left: 60px;
+  --triangle-large-side: 50px;
+  --triangle-large-margin: 15px;
+
+  /* Subdivision circle sizes */
+  --subdivision-size-mobile: 24px;
+  --subdivision-size-tablet: 36px;
+  --subdivision-size-desktop: 48px;
+  --subdivision-size-large: 60px;
+
+  --subdivision-border-mobile: 2px;
+  --subdivision-border-tablet: 3px;
+  --subdivision-border-desktop: 4px;
+  --subdivision-border-large: 5px;
+
+  --subdivision-gap-mobile: 15px;
+  --subdivision-gap-tablet: 20px;
+  --subdivision-gap-desktop: 25px;
+  --subdivision-gap-large: 30px;
+
+  --subdivision-margin-mobile: 20px;
+  --subdivision-margin-tablet: 30px;
+  --subdivision-margin-desktop: 40px;
+  --subdivision-margin-large: 50px;
+
+  /* Spacing system */
+  --space-xs: 5px;
+  --space-sm: 10px;
+  --space-md: 20px;
+  --space-lg: 30px;
+  --space-xl: 40px;
+  --space-xxl: 50px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-circle: 50%;
+
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Base reset and typography */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #1a1a1a;
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Layout components */
 .container {
-    max-width: 400px;
-    width: 100%;
-    padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  padding: var(--space-md);
 }
 
+/* Header section */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-bg-secondary);
 }
 
 .room-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 14px;
 }
 
 .room-label {
-    color: #888;
+  color: var(--color-text-secondary);
 }
 
-#room-id {
-    font-family: 'Monaco', 'Courier New', monospace;
-    background: #333;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-#copy-link {
-    background: #0066cc;
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-#copy-link:hover {
-    background: #0056b3;
-}
-
-.connection-status {
-    font-size: 12px;
-    color: #888;
-}
-
-.connection-status.connected {
-    color: #28a745;
+.room-id {
+  font-family: 'Monaco', 'Courier New', monospace;
+  background: var(--color-bg-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
 }
 
 .mode-indicator {
-    font-size: 12px;
-    color: #888;
-    font-style: italic;
+  color: var(--color-info);
+  font-weight: 500;
 }
 
 .mode-indicator.remote {
-    color: #4ECDC4;
-    font-weight: 500;
+  background: var(--color-info);
+  color: var(--color-bg-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+button {
+  background: var(--color-info);
+  color: var(--color-text-primary);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+button:hover {
+  background: var(--color-info-hover);
+}
+
+/* Connection status */
+.connection-status {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-normal);
+}
+
+.connection-status.connected {
+  color: var(--color-success);
+}
+
+/* Metronome display section */
+.metronome-display {
+  text-align: center;
+  margin-bottom: var(--space-lg);
 }
 
 .beat-display {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
 }
 
+/* Beat circle - Mobile first approach with CSS variables */
 .beat-circle {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: #333;
-    border: 4px solid #555;
-    transition: all 0.1s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: pointer;
-    user-select: none;
+  width: var(--beat-size-mobile);
+  height: var(--beat-size-mobile);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-secondary);
+  border: 4px solid var(--color-bg-light);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
 }
 
 .beat-circle:hover {
-    background: #404040;
-    border-color: #666;
-    transform: scale(1.02);
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-bg-lighter);
+  transform: scale(1.02);
 }
 
 .beat-circle.active {
-    background: #ff6b35;
-    border-color: #ff6b35;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
-    transform: scale(1.1);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 var(--space-lg) rgba(255, 107, 53, 0.5);
+  transform: scale(1.1);
 }
 
 .beat-number {
-    font-size: 36px;
-    font-weight: bold;
-    color: #fff;
-    user-select: none;
+  font-size: var(--beat-font-mobile);
+  font-weight: bold;
+  color: var(--color-text-primary);
+  user-select: none;
 }
 
 .play-triangle {
-    width: 0;
-    height: 0;
-    border-left: 20px solid #fff;
-    border-top: 15px solid transparent;
-    border-bottom: 15px solid transparent;
-    margin-left: 5px;
+  width: 0;
+  height: 0;
+  border-left: var(--triangle-mobile-left) solid var(--color-text-primary);
+  border-top: var(--triangle-mobile-side) solid transparent;
+  border-bottom: var(--triangle-mobile-side) solid transparent;
+  margin-left: var(--triangle-mobile-margin);
 }
 
+/* Subdivision display */
 .subdivision-display {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 20px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: var(--subdivision-gap-mobile);
+  margin-top: var(--subdivision-margin-mobile);
 }
 
 .subdivision-display.visible {
-    display: flex;
+  display: flex;
 }
 
 .subdivision-circle {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #555;
-    border: 2px solid #666;
-    transition: all 0.1s ease;
+  width: var(--subdivision-size-mobile);
+  height: var(--subdivision-size-mobile);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-light);
+  border: var(--subdivision-border-mobile) solid var(--color-bg-lighter);
+  transition: all var(--transition-fast);
 }
 
 .subdivision-circle.active {
-    background: #ff6b35;
-    border-color: #ff6b35;
-    transform: scale(1.2);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.2);
 }
 
-
+/* Controls section */
 .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.control-btn {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 15px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.control-btn:hover {
-    background: #444;
-}
-
-.control-btn.primary {
-    background: #ff6b35;
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.control-btn.primary:hover {
-    background: #e55a2b;
-}
-
-.control-btn.primary.playing {
-    background: #dc3545;
-}
-
-.control-btn.primary.playing:hover {
-    background: #c82333;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 .control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-.control-group label {
-    font-size: 14px;
-    color: #ccc;
-}
-
-#bpm-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 6px;
-    border-radius: 3px;
-    background: #333;
-    outline: none;
-}
-
-#bpm-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ff6b35;
-    cursor: pointer;
-}
-
-#bpm-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ff6b35;
-    cursor: pointer;
-    border: none;
-}
-
-#time-signature, #subdivisions {
-    background: #333;
-    color: white;
-    border: 1px solid #555;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-#tap-tempo {
-    padding: 10px 15px;
-    font-size: 14px;
-}
-
+/* Tempo controls */
 .tempo-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .tempo-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #4ECDC4;
-    color: white;
-    border: none;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
+  background: var(--color-info);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-circle);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background-color var(--transition-normal);
 }
 
 .tempo-btn:hover {
-    background: #45B7B8;
-}
-
-.tempo-btn:active {
-    background: #3A9C9A;
+  background: var(--color-info-hover);
 }
 
 .tempo-display {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    min-width: 140px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    user-select: none;
+  background: var(--color-bg-secondary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-weight: bold;
+  min-width: 80px;
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
 }
 
 .tempo-display:hover {
-    background: #e9ecef;
-    border-color: #ced4da;
-    transform: translateY(-1px);
+  background: var(--color-bg-tertiary);
 }
 
-.tempo-display:active {
-    background: #dee2e6;
-    transform: translateY(0);
+/* BPM slider */
+.bpm-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-light);
+  outline: none;
+  -webkit-appearance: none;
 }
 
-/* Desktop/Large screen layout redesign */
-@media (min-width: 768px) {
-    body {
-        align-items: stretch;
-    }
-
-    .container {
-        max-width: none;
-        width: 100%;
-        height: 100vh;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        padding: 20px;
-    }
-
-    header {
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    main {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        flex: 1;
-        gap: 40px;
-    }
-
-    .metronome-display {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
-        flex: 1;
-        justify-content: center;
-    }
-
-    .controls {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 40px;
-        width: 100%;
-        max-width: 1000px;
-        padding: 20px 0;
-    }
-
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        min-width: 200px;
-    }
-
-    /* Override mobile selector-row on desktop */
-    .selector-row {
-        display: contents;
-    }
-
-    .beat-display {
-        justify-content: center;
-        margin-bottom: 0;
-    }
-
-    .beat-circle {
-        width: 300px;
-        height: 300px;
-    }
-
-    .beat-number {
-        font-size: 96px;
-    }
-
-    .play-triangle {
-        border-left: 40px solid #fff;
-        border-top: 30px solid transparent;
-        border-bottom: 30px solid transparent;
-        margin-left: 10px;
-    }
-
-    .subdivision-circle {
-        width: 36px;
-        height: 36px;
-        border-width: 3px;
-    }
-
-    .subdivision-display {
-        gap: 20px;
-        margin-top: 30px;
-    }
-
-
-    .control-btn {
-        padding: 20px 24px;
-        font-size: 18px;
-    }
-
-    .control-btn.primary {
-        font-size: 24px;
-        min-width: 120px;
-    }
-
-    #bpm-slider {
-        width: 200px;
-    }
-
-    #time-signature, #subdivisions {
-        min-width: 100px;
-    }
+.bpm-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-circle);
+  background: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
 }
 
-@media (min-width: 1200px) {
-    .beat-circle {
-        width: 400px;
-        height: 400px;
-    }
-
-    .beat-number {
-        font-size: 128px;
-    }
-
-    .play-triangle {
-        border-left: 50px solid #fff;
-        border-top: 40px solid transparent;
-        border-bottom: 40px solid transparent;
-        margin-left: 12px;
-    }
-
-    .subdivision-circle {
-        width: 48px;
-        height: 48px;
-        border-width: 4px;
-    }
-
-    .subdivision-display {
-        gap: 25px;
-        margin-top: 40px;
-    }
-
+.bpm-slider::-webkit-slider-thumb:hover {
+  background: var(--color-primary-hover);
+  transform: scale(1.1);
 }
 
-@media (min-width: 1600px) {
-    .beat-circle {
-        width: 500px;
-        height: 500px;
-    }
-
-    .beat-number {
-        font-size: 160px;
-    }
-
-    .play-triangle {
-        border-left: 60px solid #fff;
-        border-top: 50px solid transparent;
-        border-bottom: 50px solid transparent;
-        margin-left: 15px;
-    }
-
-    .subdivision-circle {
-        width: 60px;
-        height: 60px;
-        border-width: 5px;
-    }
-
-    .subdivision-display {
-        gap: 30px;
-        margin-top: 50px;
-    }
-
+.bpm-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-circle);
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-normal);
 }
 
-/* Remote mode styles - hide visual metronome elements but keep beat circle as start/stop */
+/* Selector row */
+.selector-row {
+  display: flex;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.selector-row .control-group {
+  flex: 1;
+}
+
+label {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+select {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-bg-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color var(--transition-normal);
+  width: 100%;
+}
+
+select:hover,
+select:focus {
+  border-color: var(--color-bg-lighter);
+  outline: none;
+}
+
+/* Remote mode specific styles */
 .remote-mode .subdivision-display {
-    display: none !important;
+  display: none !important;
 }
 
-/* Ensure beat circle is visible and clickable in remote mode */
 .remote-mode .beat-display {
-    display: flex !important;
-    justify-content: center;
-    margin-bottom: 30px;
-    pointer-events: auto;
+  display: flex !important;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+  pointer-events: auto;
 }
 
 .remote-mode .metronome-display {
-    pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding-top: var(--space-xl);
 }
 
-.remote-mode .beat-circle {
-    cursor: pointer;
-    pointer-events: auto;
-    touch-action: manipulation;
-    position: relative;
-    z-index: 10;
+/* Tablet breakpoint (768px+) */
+@media (min-width: 768px) {
+  body {
+    align-items: stretch;
+  }
+
+  .container {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: var(--space-md);
+    max-width: none;
+  }
+
+  header {
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    gap: var(--space-xl);
+  }
+
+  .metronome-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+    flex: 1;
+    justify-content: center;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xl);
+    width: 100%;
+    max-width: 1000px;
+    padding: var(--space-md) 0;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 200px;
+  }
+
+  .selector-row {
+    display: contents;
+  }
+
+  .beat-display {
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  /* Tablet beat circle sizing */
+  .beat-circle {
+    width: var(--beat-size-tablet);
+    height: var(--beat-size-tablet);
+  }
+
+  .beat-number {
+    font-size: var(--beat-font-tablet);
+  }
+
+  .play-triangle {
+    border-left: var(--triangle-tablet-left) solid var(--color-text-primary);
+    border-top: var(--triangle-tablet-side) solid transparent;
+    border-bottom: var(--triangle-tablet-side) solid transparent;
+    margin-left: var(--triangle-tablet-margin);
+  }
+
+  .subdivision-circle {
+    width: var(--subdivision-size-tablet);
+    height: var(--subdivision-size-tablet);
+    border-width: var(--subdivision-border-tablet);
+  }
+
+  .subdivision-display {
+    gap: var(--subdivision-gap-tablet);
+    margin-top: var(--subdivision-margin-tablet);
+  }
+
+  .tempo-btn {
+    padding: var(--space-md) var(--space-lg);
+    font-size: 18px;
+  }
+
+  .bpm-slider {
+    width: 200px;
+  }
+
+  select {
+    min-width: 100px;
+  }
 }
 
-/* In remote mode, beat circle shows play triangle when stopped, nothing when playing */
-.remote-mode .beat-circle.active {
-    background: #ff6b35;
-    border-color: #ff6b35;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
-    transform: scale(1.05);
+/* Desktop breakpoint (1200px+) */
+@media (min-width: 1200px) {
+  .beat-circle {
+    width: var(--beat-size-desktop);
+    height: var(--beat-size-desktop);
+  }
+
+  .beat-number {
+    font-size: var(--beat-font-desktop);
+  }
+
+  .play-triangle {
+    border-left: var(--triangle-desktop-left) solid var(--color-text-primary);
+    border-top: var(--triangle-desktop-side) solid transparent;
+    border-bottom: var(--triangle-desktop-side) solid transparent;
+    margin-left: var(--triangle-desktop-margin);
+  }
+
+  .subdivision-circle {
+    width: var(--subdivision-size-desktop);
+    height: var(--subdivision-size-desktop);
+    border-width: var(--subdivision-border-desktop);
+  }
+
+  .subdivision-display {
+    gap: var(--subdivision-gap-desktop);
+    margin-top: var(--subdivision-margin-desktop);
+  }
 }
 
-/* Adjust layout for remote mode */
-.remote-mode main {
-    justify-content: flex-start;
-    padding-top: 40px;
-}
+/* Large screens breakpoint (1600px+) */
+@media (min-width: 1600px) {
+  .beat-circle {
+    width: var(--beat-size-large);
+    height: var(--beat-size-large);
+  }
 
-.remote-mode .controls {
-    max-width: 600px;
-    margin: 0 auto;
-}
+  .beat-number {
+    font-size: var(--beat-font-large);
+  }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 15px;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-    }
+  .play-triangle {
+    border-left: var(--triangle-large-left) solid var(--color-text-primary);
+    border-top: var(--triangle-large-side) solid transparent;
+    border-bottom: var(--triangle-large-side) solid transparent;
+    margin-left: var(--triangle-large-margin);
+  }
 
-    header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-        flex-shrink: 0;
-    }
+  .subdivision-circle {
+    width: var(--subdivision-size-large);
+    height: var(--subdivision-size-large);
+    border-width: var(--subdivision-border-large);
+  }
 
-    main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 0;
-    }
-
-    .metronome-display {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .controls {
-        flex-direction: column;
-        gap: 15px;
-        flex-shrink: 0;
-        margin-top: 20px;
-    }
-
-    /* Put subdivisions and time signature side by side on mobile */
-    .selector-row {
-        display: flex;
-        gap: 15px;
-    }
-
-    .selector-row .control-group {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .beat-circle {
-        width: 140px;
-        height: 140px;
-    }
-
-    .beat-number {
-        font-size: 40px;
-    }
-
-    .play-triangle {
-        border-left: 20px solid #fff;
-        border-top: 16px solid transparent;
-        border-bottom: 16px solid transparent;
-        margin-left: 4px;
-    }
-
-    .subdivision-circle {
-        width: 18px;
-        height: 18px;
-        border-width: 2px;
-    }
-
-    .subdivision-display {
-        gap: 10px;
-        margin-top: 15px;
-    }
-
+  .subdivision-display {
+    gap: var(--subdivision-gap-large);
+    margin-top: var(--subdivision-margin-large);
+  }
 }

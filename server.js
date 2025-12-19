@@ -1,12 +1,39 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const WebSocket = require('ws');
-const url = require('url');
-const os = require('os');
+import express from 'express';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import compression from 'compression';
+import helmet from 'helmet';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { parse as parseUrl } from 'url';
+import { networkInterfaces } from 'os';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
+const server = createServer(app);
+
+// Enhanced HTTP handling with security and compression
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      connectSrc: ["'self'", "ws:", "wss:"]
+    }
+  }
+}));
+app.use(compression());
+
+// Static file serving with caching
+app.use(express.static('public', {
+  maxAge: '1d',
+  etag: true
+}));
+
+// Network IP detection (preserved from legacy)
 function getLocalNetworkIP() {
-  const interfaces = os.networkInterfaces();
+  const interfaces = networkInterfaces();
   for (const name of Object.keys(interfaces)) {
     for (const iface of interfaces[name]) {
       if (iface.family === 'IPv4' && !iface.internal) {
@@ -17,34 +44,12 @@ function getLocalNetworkIP() {
   return null;
 }
 
-const server = http.createServer((req, res) => {
-  const pathname = url.parse(req.url).pathname;
-  let filePath = path.join(__dirname, 'public', pathname === '/' ? 'index.html' : pathname);
-
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      res.writeHead(404);
-      res.end('Not found');
-      return;
-    }
-
-    const ext = path.extname(filePath);
-    const contentType = {
-      '.html': 'text/html',
-      '.css': 'text/css',
-      '.js': 'text/javascript'
-    }[ext] || 'text/plain';
-
-    res.writeHead(200, { 'Content-Type': contentType });
-    res.end(content);
-  });
-});
-
-const wss = new WebSocket.Server({ server });
-const rooms = new Map(); // roomId -> { clients: Set<WebSocket>, state: {bpm, playing, timeSignature} }
+// WebSocket setup - EXACT logic preservation from legacy/server.js
+const wss = new WebSocketServer({ server });
+const rooms = new Map(); // roomId -> { clients: Set<WebSocket>, state: {bpm, playing, timeSignature, subdivisions} }
 
 function getRoomId(req) {
-  const query = url.parse(req.url, true).query;
+  const query = parseUrl(req.url, true).query;
   return query.room;
 }
 
@@ -69,6 +74,7 @@ function broadcastToRoom(roomId, message, sender = null) {
   });
 }
 
+// WebSocket connection handling - EXACT preservation from legacy/server.js lines 72-109
 wss.on('connection', (ws, req) => {
   const roomId = getRoomId(req);
   if (!roomId) {
@@ -110,5 +116,9 @@ wss.on('connection', (ws, req) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Metronome server running on port ${PORT}`);
+  console.log(`Enhanced metronome server running on port ${PORT}`);
+  const networkIP = getLocalNetworkIP();
+  if (networkIP) {
+    console.log(`Local network access: http://${networkIP}:${PORT}`);
+  }
 });
