@@ -355,6 +355,11 @@ header {
         min-width: 200px;
     }
 
+    /* Override mobile selector-row on desktop */
+    .selector-row {
+        display: contents;
+    }
+
     .beat-display {
         justify-content: center;
         margin-bottom: 0;
@@ -470,17 +475,39 @@ header {
 @media (max-width: 480px) {
     .container {
         padding: 15px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
     header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
+        flex-shrink: 0;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 0;
+    }
+
+    .metronome-display {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .controls {
         flex-direction: column;
         gap: 15px;
+        flex-shrink: 0;
+        margin-top: 20px;
     }
 
     /* Put subdivisions and time signature side by side on mobile */
@@ -495,19 +522,19 @@ header {
     }
 
     .beat-circle {
-        width: 100px;
-        height: 100px;
+        width: 140px;
+        height: 140px;
     }
 
     .beat-number {
-        font-size: 28px;
+        font-size: 40px;
     }
 
     .play-triangle {
-        border-left: 15px solid #fff;
-        border-top: 12px solid transparent;
-        border-bottom: 12px solid transparent;
-        margin-left: 3px;
+        border-left: 20px solid #fff;
+        border-top: 16px solid transparent;
+        border-bottom: 16px solid transparent;
+        margin-left: 4px;
     }
 
     .subdivision-circle {
