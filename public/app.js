@@ -19,6 +19,7 @@ class Metronome {
         this.initAudio();
         this.initWebSocket();
         this.attachEventListeners();
+        this.updateBeatDisplay();
     }
 
     initRoom() {
@@ -37,7 +38,6 @@ class Metronome {
 
     initElements() {
         this.elements = {
-            playPause: document.getElementById('play-pause'),
             bpmValue: document.getElementById('bpm-value'),
             bpmSlider: document.getElementById('bpm-slider'),
             tempoMinus5: document.getElementById('tempo-minus-5'),
@@ -85,7 +85,7 @@ class Metronome {
     }
 
     attachEventListeners() {
-        this.elements.playPause.onclick = () => this.togglePlay();
+        this.elements.beatCircle.onclick = () => this.togglePlay();
 
         this.elements.bpmSlider.oninput = (e) => {
             this.setBpm(parseInt(e.target.value));
@@ -198,8 +198,7 @@ class Metronome {
         this.isPlaying = true;
         this.beatCount = 0;
         this.subdivisionCount = 0;
-        this.elements.playPause.textContent = 'Stop';
-        this.elements.playPause.classList.add('playing');
+        this.updateBeatDisplay();
 
         this.tick(); // First beat immediately
         this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
@@ -207,8 +206,6 @@ class Metronome {
 
     stopMetronome() {
         this.isPlaying = false;
-        this.elements.playPause.textContent = 'Play';
-        this.elements.playPause.classList.remove('playing');
 
         if (this.intervalId) {
             clearInterval(this.intervalId);
@@ -216,6 +213,18 @@ class Metronome {
         }
 
         this.elements.beatCircle.classList.remove('active');
+        this.updateBeatDisplay();
+    }
+
+    updateBeatDisplay() {
+        if (this.isPlaying) {
+            // Show beat number when playing
+            const displayBeat = this.beatCount + 1;
+            this.elements.beatNumber.innerHTML = displayBeat;
+        } else {
+            // Show play triangle when stopped
+            this.elements.beatNumber.innerHTML = '<div class="play-triangle"></div>';
+        }
     }
 
     tick() {
@@ -227,8 +236,6 @@ class Metronome {
 
         if (isMainBeat) {
             // Update beat display only on main beats
-            const displayBeat = this.beatCount + 1;
-            this.elements.beatNumber.textContent = displayBeat;
             this.visualBeat();
         }
 
@@ -241,6 +248,7 @@ class Metronome {
         // Advance beat count only on main beats
         if (isMainBeat) {
             this.beatCount = (this.beatCount + 1) % beatsPerMeasure;
+            this.updateBeatDisplay();
         }
     }
 

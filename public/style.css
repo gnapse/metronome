@@ -87,6 +87,14 @@ header {
     align-items: center;
     justify-content: center;
     position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.beat-circle:hover {
+    background: #404040;
+    border-color: #666;
+    transform: scale(1.02);
 }
 
 .beat-circle.active {
@@ -101,6 +109,15 @@ header {
     font-weight: bold;
     color: #fff;
     user-select: none;
+}
+
+.play-triangle {
+    width: 0;
+    height: 0;
+    border-left: 20px solid #fff;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    margin-left: 5px;
 }
 
 
@@ -311,6 +328,13 @@ header {
         font-size: 96px;
     }
 
+    .play-triangle {
+        border-left: 40px solid #fff;
+        border-top: 30px solid transparent;
+        border-bottom: 30px solid transparent;
+        margin-left: 10px;
+    }
+
 
     .control-btn {
         padding: 20px 24px;
@@ -341,6 +365,13 @@ header {
         font-size: 128px;
     }
 
+    .play-triangle {
+        border-left: 50px solid #fff;
+        border-top: 40px solid transparent;
+        border-bottom: 40px solid transparent;
+        margin-left: 12px;
+    }
+
 }
 
 @media (min-width: 1600px) {
@@ -351,6 +382,13 @@ header {
 
     .beat-number {
         font-size: 160px;
+    }
+
+    .play-triangle {
+        border-left: 60px solid #fff;
+        border-top: 50px solid transparent;
+        border-bottom: 50px solid transparent;
+        margin-left: 15px;
     }
 
 }
@@ -373,6 +411,13 @@ header {
 
     .beat-number {
         font-size: 28px;
+    }
+
+    .play-triangle {
+        border-left: 15px solid #fff;
+        border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent;
+        margin-left: 3px;
     }
 
 }
