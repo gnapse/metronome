@@ -255,6 +255,20 @@ header {
     color: #333;
     min-width: 140px;
     text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.tempo-display:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+    transform: translateY(-1px);
+}
+
+.tempo-display:active {
+    background: #dee2e6;
+    transform: translateY(0);
 }
 
 /* Desktop/Large screen layout redesign */

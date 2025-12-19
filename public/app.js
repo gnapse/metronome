@@ -44,9 +44,9 @@ class Metronome {
             tempoMinus1: document.getElementById('tempo-minus-1'),
             tempoPlus1: document.getElementById('tempo-plus-1'),
             tempoPlus5: document.getElementById('tempo-plus-5'),
+            tempoDisplay: document.querySelector('.tempo-display'),
             timeSignature: document.getElementById('time-signature'),
             subdivisions: document.getElementById('subdivisions'),
-            tapTempo: document.getElementById('tap-tempo'),
             beatCircle: document.getElementById('beat-circle'),
             beatNumber: document.getElementById('beat-number'),
             connectionStatus: document.getElementById('connection-status'),
@@ -104,7 +104,7 @@ class Metronome {
             this.setSubdivisions(e.target.value);
         };
 
-        this.elements.tapTempo.onclick = () => this.handleTapTempo();
+        this.elements.tempoDisplay.onclick = () => this.handleTapTempo();
 
         this.elements.copyLink.onclick = () => {
             let linkUrl = window.location.href;
