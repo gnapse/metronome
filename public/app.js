@@ -68,7 +68,7 @@ function metronome() {
 				return this.isPlaying ? "STOP" : '<div class="play-triangle"></div>';
 			}
 			if (this.isPlaying) {
-				return this.beatCount + 1;
+				return Math.max(this.beatCount, 0) + 1;
 			}
 			return '<div class="play-triangle"></div>';
 		},
@@ -126,15 +126,12 @@ function metronome() {
 		},
 
 		updateFromRemote(state) {
+			let timingChanged = false;
+
 			// Update BPM - only reset if actually changed
 			if (state.bpm !== undefined && state.bpm !== this.bpm) {
 				this.bpm = state.bpm;
-
-				// Restart interval with new timing if currently playing
-				if (this.isPlaying) {
-					this.restartWithNewTiming();
-					this.resetBeatCount(); // Reset counts to sync timing across devices
-				}
+				timingChanged = true;
 			}
 
 			// Update time signature - only reset if actually changed
@@ -152,8 +149,14 @@ function metronome() {
 				state.subdivisions !== this.subdivisions
 			) {
 				this.subdivisions = state.subdivisions;
-				// Reset subdivision count when subdivisions change to sync timing
-				this.subdivisionCount = 0;
+				this.subdivisionCount = 0; // Reset subdivision count when subdivisions change to sync timing
+				timingChanged = true;
+			}
+
+			// If timing-related parameters changed and we're playing, restart timing
+			if (timingChanged && this.isPlaying) {
+				this.restartWithNewTiming();
+				this.resetBeatCount(); // Reset counts to sync timing across devices
 			}
 
 			// Update playing state
