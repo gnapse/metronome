@@ -198,7 +198,7 @@ header {
     border: none;
 }
 
-#time-signature {
+#time-signature, #subdivisions {
     background: #333;
     color: white;
     border: 1px solid #555;
@@ -306,7 +306,7 @@ header {
         width: 200px;
     }
 
-    #time-signature {
+    #time-signature, #subdivisions {
         min-width: 100px;
     }
 }

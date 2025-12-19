@@ -5,7 +5,9 @@ class Metronome {
         this.isPlaying = false;
         this.bpm = 120;
         this.timeSignature = '4/4';
+        this.subdivisions = 'quarter';
         this.beatCount = 0;
+        this.subdivisionCount = 0;
         this.intervalId = null;
         this.roomId = null;
         this.networkIP = null;
@@ -39,6 +41,7 @@ class Metronome {
             bpmValue: document.getElementById('bpm-value'),
             bpmSlider: document.getElementById('bpm-slider'),
             timeSignature: document.getElementById('time-signature'),
+            subdivisions: document.getElementById('subdivisions'),
             tapTempo: document.getElementById('tap-tempo'),
             beatCircle: document.getElementById('beat-circle'),
             beatNumber: document.getElementById('beat-number'),
@@ -88,6 +91,10 @@ class Metronome {
             this.setTimeSignature(e.target.value);
         };
 
+        this.elements.subdivisions.onchange = (e) => {
+            this.setSubdivisions(e.target.value);
+        };
+
         this.elements.tapTempo.onclick = () => this.handleTapTempo();
 
         this.elements.copyLink.onclick = () => {
@@ -123,6 +130,11 @@ class Metronome {
             this.elements.timeSignature.value = this.timeSignature;
         }
 
+        if (state.subdivisions !== undefined) {
+            this.subdivisions = state.subdivisions;
+            this.elements.subdivisions.value = this.subdivisions;
+        }
+
         if (state.playing !== undefined) {
             if (state.playing !== this.isPlaying) {
                 if (state.playing) {
@@ -140,9 +152,24 @@ class Metronome {
                 type: 'state',
                 bpm: this.bpm,
                 playing: this.isPlaying,
-                timeSignature: this.timeSignature
+                timeSignature: this.timeSignature,
+                subdivisions: this.subdivisions
             }));
         }
+    }
+
+    getSubdivisionMultiplier() {
+        switch (this.subdivisions) {
+            case 'quarter': return 1;
+            case 'eighth': return 2;
+            case 'sixteenth': return 4;
+            default: return 1;
+        }
+    }
+
+    getTickInterval() {
+        const multiplier = this.getSubdivisionMultiplier();
+        return (60000 / this.bpm) / multiplier;
     }
 
     togglePlay() {
@@ -161,11 +188,12 @@ class Metronome {
 
         this.isPlaying = true;
         this.beatCount = 0;
+        this.subdivisionCount = 0;
         this.elements.playPause.textContent = 'Stop';
         this.elements.playPause.classList.add('playing');
 
         this.tick(); // First beat immediately
-        this.intervalId = setInterval(() => this.tick(), 60000 / this.bpm);
+        this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
     }
 
     stopMetronome() {
@@ -182,29 +210,49 @@ class Metronome {
     }
 
     tick() {
-        // Display 1-based beat number (1, 2, 3, 4 instead of 0, 1, 2, 3)
-        const displayBeat = this.beatCount + 1;
-        this.elements.beatNumber.textContent = displayBeat;
-
-        this.playClick();
-        this.visualBeat();
-
+        const subdivisionMultiplier = this.getSubdivisionMultiplier();
         const beatsPerMeasure = parseInt(this.timeSignature.split('/')[0]);
-        this.beatCount = (this.beatCount + 1) % beatsPerMeasure;
+
+        // Check if this is a main beat (quarter note)
+        const isMainBeat = this.subdivisionCount % subdivisionMultiplier === 0;
+
+        if (isMainBeat) {
+            // Update beat display only on main beats
+            const displayBeat = this.beatCount + 1;
+            this.elements.beatNumber.textContent = displayBeat;
+            this.visualBeat();
+        }
+
+        // Play different sounds for main beats vs subdivisions
+        this.playClick(isMainBeat);
+
+        // Advance subdivision count
+        this.subdivisionCount++;
+
+        // Advance beat count only on main beats
+        if (isMainBeat) {
+            this.beatCount = (this.beatCount + 1) % beatsPerMeasure;
+        }
     }
 
-    playClick() {
+    playClick(isMainBeat = true) {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
 
         oscillator.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
 
-        // First beat of measure is higher pitch
-        oscillator.frequency.value = this.beatCount === 0 ? 1000 : 800;
-        oscillator.type = 'sine';
+        if (isMainBeat) {
+            // Main beats: First beat of measure is higher pitch
+            oscillator.frequency.value = this.beatCount === 0 ? 1000 : 800;
+            gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+        } else {
+            // Subdivisions: Lower pitch and quieter
+            oscillator.frequency.value = 600;
+            gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+        }
 
-        gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+        oscillator.type = 'sine';
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
 
         oscillator.start(this.audioContext.currentTime);
@@ -225,7 +273,7 @@ class Metronome {
 
         if (this.isPlaying) {
             clearInterval(this.intervalId);
-            this.intervalId = setInterval(() => this.tick(), 60000 / this.bpm);
+            this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
         }
 
         this.broadcastState();
@@ -234,6 +282,20 @@ class Metronome {
     setTimeSignature(newTimeSignature) {
         this.timeSignature = newTimeSignature;
         this.beatCount = 0; // Reset beat count
+        this.subdivisionCount = 0; // Reset subdivision count
+        this.broadcastState();
+    }
+
+    setSubdivisions(newSubdivisions) {
+        this.subdivisions = newSubdivisions;
+        this.subdivisionCount = 0; // Reset subdivision count
+
+        // Update timing if currently playing
+        if (this.isPlaying) {
+            clearInterval(this.intervalId);
+            this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
+        }
+
         this.broadcastState();
     }
 
