@@ -155,7 +155,7 @@
 
                     <div class="qr-modal-footer">
                         <p class="qr-url-text" x-text="wsManager?.generateShareableUrl(mode)"></p>
-                        <button @click="copyUrlFromModal()" class="qr-copy-btn">Copy URL</button>
+                        <button @click="copyUrlFromModal()" class="qr-copy-btn" x-text="copyUrlText">Copy URL</button>
                     </div>
                 </div>
             </div>

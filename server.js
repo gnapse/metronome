@@ -31,10 +31,10 @@ app.use(helmet({
 }));
 app.use(compression());
 
-// Static file serving with caching
+// Static file serving (no caching in development)
 app.use(express.static('public', {
-  maxAge: '1d',
-  etag: true
+  maxAge: 0,
+  etag: false
 }));
 
 // Network IP detection (preserved from legacy)

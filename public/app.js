@@ -25,12 +25,12 @@ function metronome() {
 		wsConnected: false,
 		beatActive: false,
 		currentSubdivision: 0,
-		copyButtonText: "Copy Link",
 
 		// QR Modal state
 		showQrModal: false,
 		qrCodeDataUrl: null,
 		connectionFeedback: false,
+		copyUrlText: "Copy URL",
 
 		// Services (will be initialized)
 		timingService: null,
@@ -100,10 +100,6 @@ function metronome() {
 			const params = parseUrlParams();
 			this.roomId = params.roomId;
 			this.mode = params.mode;
-
-			// Set copy button text based on mode
-			this.copyButtonText =
-				this.mode === "normal" ? "Copy Remote Link" : "Copy Link";
 
 			// Apply mode-specific styling
 			if (this.mode === "remote") {
@@ -390,11 +386,9 @@ function metronome() {
 			if (!this.wsManager) return;
 			const url = this.wsManager.generateShareableUrl(this.mode);
 			await navigator.clipboard.writeText(url);
-			// Brief success feedback (reuse existing pattern)
-			const originalText = this.copyButtonText;
-			this.copyButtonText = "Copied!";
+			this.copyUrlText = "Copied!";
 			setTimeout(() => {
-				this.copyButtonText = originalText;
+				this.copyUrlText = "Copy URL";
 			}, 1000);
 		},
 
