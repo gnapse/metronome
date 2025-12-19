@@ -16,7 +16,7 @@ function metronome() {
 		timeSignature: "4/4",
 		subdivisions: "quarter",
 		isPlaying: false,
-		beatCount: 0,
+		beatCount: -1,
 		subdivisionCount: 0,
 
 		// UI state
@@ -133,9 +133,7 @@ function metronome() {
 				// Restart interval with new timing if currently playing
 				if (this.isPlaying) {
 					this.restartWithNewTiming();
-					// Reset counts to sync timing across devices
-					this.beatCount = 0;
-					this.subdivisionCount = 0;
+					this.resetBeatCount(); // Reset counts to sync timing across devices
 				}
 			}
 
@@ -145,9 +143,7 @@ function metronome() {
 				state.timeSignature !== this.timeSignature
 			) {
 				this.timeSignature = state.timeSignature;
-				// Reset counts when time signature changes to sync timing
-				this.beatCount = 0;
-				this.subdivisionCount = 0;
+				this.resetBeatCount(); // Reset counts when time signature changes to sync timing
 			}
 
 			// Update subdivisions - only reset if actually changed
@@ -191,6 +187,11 @@ function metronome() {
 			this.broadcastState();
 		},
 
+		resetBeatCount() {
+			this.beatCount = -1;
+			this.subdivisionCount = 0;
+		},
+
 		startMetronome() {
 			// Resume audio context if suspended
 			if (this.audioService) {
@@ -198,8 +199,7 @@ function metronome() {
 			}
 
 			this.isPlaying = true;
-			this.beatCount = 0;
-			this.subdivisionCount = 0;
+			this.resetBeatCount();
 
 			// First beat immediately
 			this.tick();
@@ -229,9 +229,6 @@ function metronome() {
 				this.visualBeat();
 			}
 
-			// Play audio (handles remote mode check internally)
-			this.playClick(isMainBeat);
-
 			// Update subdivision display
 			if (this.showSubdivisions && this.mode !== "remote") {
 				this.currentSubdivision = this.timingService.getCurrentSubdivision(
@@ -250,6 +247,9 @@ function metronome() {
 					this.timeSignature,
 				);
 			}
+
+			// Play audio (handles remote mode check internally)
+			this.playClick(isMainBeat);
 		},
 
 		// Play click sound
@@ -286,9 +286,7 @@ function metronome() {
 
 			if (this.isPlaying) {
 				this.restartWithNewTiming();
-				// Reset counts when BPM changes to sync timing across devices
-				this.beatCount = 0;
-				this.subdivisionCount = 0;
+				this.resetBeatCount(); // Reset counts when BPM changes to sync timing across devices
 			}
 
 			this.broadcastState();
@@ -301,8 +299,7 @@ function metronome() {
 
 		setTimeSignature(newTimeSignature) {
 			this.timeSignature = newTimeSignature;
-			this.beatCount = 0; // Reset beat count
-			this.subdivisionCount = 0; // Reset subdivision count
+			this.resetBeatCount();
 			this.broadcastState();
 		},
 
