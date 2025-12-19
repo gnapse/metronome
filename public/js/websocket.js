@@ -13,8 +13,6 @@ export class WebSocketManager {
     this.networkIP = null;
     this.reconnectDelay = 2000;
     this.isConnected = false;
-    this.lastClientCount = 0;
-    this.hasReceivedInitialState = false;
   }
 
   /**
@@ -46,6 +44,8 @@ export class WebSocketManager {
           const data = JSON.parse(event.data);
           if (data.type === 'state') {
             this.handleStateUpdate(data);
+          } else if (data.type === 'client-joined' && this.onNewConnection) {
+            this.onNewConnection();
           }
         } catch (error) {
           console.warn('Invalid WebSocket message:', error);
@@ -71,18 +71,6 @@ export class WebSocketManager {
     // Store network IP for link generation
     if (state.networkIP !== undefined) {
       this.networkIP = state.networkIP;
-    }
-
-    // Detect potential new connections
-    // Skip the first state update (initial connection)
-    if (this.hasReceivedInitialState && this.onNewConnection) {
-      // Call new connection handler for any state update after initial
-      // This is a simple heuristic - state updates often indicate new clients
-      this.onNewConnection();
-    }
-
-    if (!this.hasReceivedInitialState) {
-      this.hasReceivedInitialState = true;
     }
 
     // Pass state update to main store

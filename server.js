@@ -102,6 +102,11 @@ wss.on('connection', (ws, req) => {
   // Send current state to new client
   ws.send(JSON.stringify({ type: 'state', networkIP: getLocalNetworkIP(), ...room.state }));
 
+  // Notify other clients that someone joined
+  if (!isNewRoom) {
+    broadcastToRoom(roomId, { type: 'client-joined', clientCount: room.clients.size }, ws);
+  }
+
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data);
