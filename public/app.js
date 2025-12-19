@@ -126,8 +126,8 @@ function metronome() {
 		},
 
 		updateFromRemote(state) {
-			// Update BPM
-			if (state.bpm !== undefined) {
+			// Update BPM - only reset if actually changed
+			if (state.bpm !== undefined && state.bpm !== this.bpm) {
 				this.bpm = state.bpm;
 
 				// Restart interval with new timing if currently playing
@@ -139,16 +139,22 @@ function metronome() {
 				}
 			}
 
-			// Update time signature
-			if (state.timeSignature !== undefined) {
+			// Update time signature - only reset if actually changed
+			if (
+				state.timeSignature !== undefined &&
+				state.timeSignature !== this.timeSignature
+			) {
 				this.timeSignature = state.timeSignature;
 				// Reset counts when time signature changes to sync timing
 				this.beatCount = 0;
 				this.subdivisionCount = 0;
 			}
 
-			// Update subdivisions
-			if (state.subdivisions !== undefined) {
+			// Update subdivisions - only reset if actually changed
+			if (
+				state.subdivisions !== undefined &&
+				state.subdivisions !== this.subdivisions
+			) {
 				this.subdivisions = state.subdivisions;
 				// Reset subdivision count when subdivisions change to sync timing
 				this.subdivisionCount = 0;
