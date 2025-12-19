@@ -26,33 +26,33 @@
   --color-info-hover: #45B7B8;
 
   /* Beat circle sizes - Responsive design tokens */
-  --beat-size-mobile: 120px;
-  --beat-size-tablet: 300px;
-  --beat-size-desktop: 400px;
-  --beat-size-large: 500px;
+  --beat-size-mobile: 250px;
+  --beat-size-tablet: 500px;
+  --beat-size-desktop: 600px;
+  --beat-size-large: 700px;
 
   /* Beat number font sizes */
-  --beat-font-mobile: 36px;
-  --beat-font-tablet: 96px;
-  --beat-font-desktop: 128px;
-  --beat-font-large: 160px;
+  --beat-font-mobile: 144px;
+  --beat-font-tablet: 256px;
+  --beat-font-desktop: 384px;
+  --beat-font-large: 480px;
 
   /* Play triangle sizes */
-  --triangle-mobile-left: 20px;
-  --triangle-mobile-side: 15px;
-  --triangle-mobile-margin: 5px;
+  --triangle-mobile-left: 50px;
+  --triangle-mobile-side: 35px;
+  --triangle-mobile-margin: 12px;
 
-  --triangle-tablet-left: 40px;
-  --triangle-tablet-side: 30px;
-  --triangle-tablet-margin: 10px;
+  --triangle-tablet-left: 100px;
+  --triangle-tablet-side: 75px;
+  --triangle-tablet-margin: 25px;
 
-  --triangle-desktop-left: 50px;
-  --triangle-desktop-side: 40px;
-  --triangle-desktop-margin: 12px;
+  --triangle-desktop-left: 150px;
+  --triangle-desktop-side: 90px;
+  --triangle-desktop-margin: 30px;
 
-  --triangle-large-left: 60px;
-  --triangle-large-side: 50px;
-  --triangle-large-margin: 15px;
+  --triangle-large-left: 200px;
+  --triangle-large-side: 150px;
+  --triangle-large-margin: 45px;
 
   /* Subdivision circle sizes */
   --subdivision-size-mobile: 24px;
@@ -242,6 +242,12 @@ button:hover {
   border-top: var(--triangle-mobile-side) solid transparent;
   border-bottom: var(--triangle-mobile-side) solid transparent;
   margin-left: var(--triangle-mobile-margin);
+}
+
+.stop-square {
+  width: var(--triangle-mobile-left);
+  height: var(--triangle-mobile-left);
+  background: var(--color-text-primary);
 }
 
 /* Subdivision display */
@@ -501,6 +507,11 @@ select:focus {
     margin-left: var(--triangle-tablet-margin);
   }
 
+  .stop-square {
+    width: var(--triangle-tablet-left);
+    height: var(--triangle-tablet-left);
+  }
+
   .subdivision-circle {
     width: var(--subdivision-size-tablet);
     height: var(--subdivision-size-tablet);
@@ -545,6 +556,11 @@ select:focus {
     margin-left: var(--triangle-desktop-margin);
   }
 
+  .stop-square {
+    width: var(--triangle-desktop-left);
+    height: var(--triangle-desktop-left);
+  }
+
   .subdivision-circle {
     width: var(--subdivision-size-desktop);
     height: var(--subdivision-size-desktop);
@@ -573,6 +589,11 @@ select:focus {
     border-top: var(--triangle-large-side) solid transparent;
     border-bottom: var(--triangle-large-side) solid transparent;
     margin-left: var(--triangle-large-margin);
+  }
+
+  .stop-square {
+    width: var(--triangle-large-left);
+    height: var(--triangle-large-left);
   }
 
   .subdivision-circle {

@@ -2,6 +2,8 @@
 
 A minimal metronome app with WebSocket remote control and room-based functionality for synchronized multi-device use.
 
+![video](https://brief.cleanshot.cloud/media/1102/iFW5j7HU0ezV3aEEEnpAzadQ072Tj8zfJ7CvTMN9.mp4?anchor=center)
+
 ## Features
 
 - **Room-based sessions**: Each room has isolated metronome state
