@@ -171,6 +171,7 @@ class Metronome {
         switch (this.subdivisions) {
             case 'quarter': return 1;
             case 'eighth': return 2;
+            case 'triplets': return 3;
             case 'sixteenth': return 4;
             default: return 1;
         }
