@@ -1,95 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remote Metronome</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-</head>
-<body>
-    <div class="container" x-data="metronome()" x-init="init()">
-        <header>
-            <div class="room-info">
-                <span class="room-label">Room:</span>
-                <span x-text="roomId" class="room-id"></span>
-                <span x-show="mode === 'remote'" class="mode-indicator remote">(Remote Control)</span>
-                <button @click="copyLink()" x-text="copyButtonText">Copy Link</button>
-            </div>
-            <div class="connection-status" :class="{ connected: wsConnected }" x-text="connectionStatus">
-                Connecting...
-            </div>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Remote Metronome</title>
+        <link rel="stylesheet" href="style.css" />
+        <script type="module" src="app.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+            defer
+        ></script>
+    </head>
+    <body>
+        <div class="container" x-data="metronome()" x-init="init()">
+            <header>
+                <div class="room-info">
+                    <span class="room-label">Room:</span>
+                    <span x-text="roomId" class="room-id"></span>
+                    <span
+                        x-show="mode === 'remote'"
+                        class="mode-indicator remote"
+                        >(Remote Control)</span
+                    >
+                    <button @click="copyLink()" x-text="copyButtonText">
+                        Copy Link
+                    </button>
+                </div>
+                <div
+                    class="connection-status"
+                    :class="{ connected: wsConnected }"
+                    x-text="connectionStatus"
+                >
+                    Connecting...
+                </div>
+            </header>
 
-        <main>
-            <div class="metronome-display">
-                <div class="beat-display">
-                    <div class="beat-circle"
-                         :class="{ active: isPlaying && beatActive }"
-                         @click="togglePlay()">
-                        <span class="beat-number" x-html="beatDisplayContent"></span>
+            <main>
+                <div class="metronome-display">
+                    <div class="beat-display">
+                        <button
+                            class="beat-circle"
+                            :class="{ active: isPlaying && beatActive }"
+                            @click="togglePlay()"
+                        >
+                            <span
+                                class="beat-number"
+                                x-html="beatDisplayContent"
+                            ></span>
+                        </button>
+                    </div>
+
+                    <!-- Subdivision display - only visible when subdivisions > 1 and not in remote mode -->
+                    <div
+                        class="subdivision-display"
+                        :class="{ visible: showSubdivisions }"
+                        x-show="showSubdivisions && mode !== 'remote'"
+                    >
+                        <template x-for="i in subdivisionMultiplier" :key="i">
+                            <div
+                                class="subdivision-circle"
+                                :class="{ active: currentSubdivision === (i-1) }"
+                            ></div>
+                        </template>
                     </div>
                 </div>
 
-                <!-- Subdivision display - only visible when subdivisions > 1 and not in remote mode -->
-                <div class="subdivision-display"
-                     :class="{ visible: showSubdivisions }"
-                     x-show="showSubdivisions && mode !== 'remote'">
-                    <template x-for="i in subdivisionMultiplier" :key="i">
-                        <div class="subdivision-circle"
-                             :class="{ active: currentSubdivision === (i-1) }"></div>
-                    </template>
-                </div>
-            </div>
-
-            <div class="controls">
-                <div class="control-group">
-                    <div class="tempo-controls">
-                        <button class="tempo-btn" @click="adjustBpm(-5)">-5</button>
-                        <button class="tempo-btn" @click="adjustBpm(-1)">-</button>
-                        <div class="tempo-display" @click="tapTempo()">
-                            <span><span x-text="bpm"></span> bpm</span>
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="tempo-controls">
+                            <button class="tempo-btn" @click="adjustBpm(-5)">
+                                -5
+                            </button>
+                            <button class="tempo-btn" @click="adjustBpm(-1)">
+                                -
+                            </button>
+                            <div class="tempo-display" @click="tapTempo()">
+                                <span><span x-text="bpm"></span> bpm</span>
+                            </div>
+                            <button class="tempo-btn" @click="adjustBpm(1)">
+                                +
+                            </button>
+                            <button class="tempo-btn" @click="adjustBpm(5)">
+                                +5
+                            </button>
                         </div>
-                        <button class="tempo-btn" @click="adjustBpm(1)">+</button>
-                        <button class="tempo-btn" @click="adjustBpm(5)">+5</button>
+                        <input
+                            type="range"
+                            x-model="bpm"
+                            @input="setBpm($event.target.value)"
+                            min="40"
+                            max="220"
+                            class="bpm-slider"
+                        />
                     </div>
-                    <input type="range"
-                           x-model="bpm"
-                           @input="setBpm($event.target.value)"
-                           min="40"
-                           max="220"
-                           class="bpm-slider">
-                </div>
 
-                <div class="selector-row">
-                    <div class="control-group">
-                        <label for="subdivisions">Subdivisions</label>
-                        <select id="subdivisions"
+                    <div class="selector-row">
+                        <div class="control-group">
+                            <label for="subdivisions">Subdivisions</label>
+                            <select
+                                id="subdivisions"
                                 x-model="subdivisions"
-                                @change="setSubdivisions($event.target.value)">
-                            <option value="quarter">Quarter Notes</option>
-                            <option value="eighth">8th Notes</option>
-                            <option value="sixteenth">16th Notes</option>
-                            <option value="triplets">Triplets</option>
-                        </select>
-                    </div>
+                                @change="setSubdivisions($event.target.value)"
+                            >
+                                <option value="quarter">Quarter Notes</option>
+                                <option value="eighth">8th Notes</option>
+                                <option value="sixteenth">16th Notes</option>
+                                <option value="triplets">Triplets</option>
+                            </select>
+                        </div>
 
-                    <div class="control-group">
-                        <label for="time-signature">Time Signature</label>
-                        <select id="time-signature"
+                        <div class="control-group">
+                            <label for="time-signature">Time Signature</label>
+                            <select
+                                id="time-signature"
                                 x-model="timeSignature"
-                                @change="setTimeSignature($event.target.value)">
-                            <option value="2/4">2/4</option>
-                            <option value="3/4">3/4</option>
-                            <option value="4/4">4/4</option>
-                            <option value="6/8">6/8</option>
-                            <option value="7/8">7/8</option>
-                        </select>
+                                @change="setTimeSignature($event.target.value)"
+                            >
+                                <option value="2/4">2/4</option>
+                                <option value="3/4">3/4</option>
+                                <option value="4/4">4/4</option>
+                                <option value="6/8">6/8</option>
+                                <option value="7/8">7/8</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
-</body>
+            </main>
+        </div>
+    </body>
 </html>
