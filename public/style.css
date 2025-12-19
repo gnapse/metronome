@@ -478,6 +478,22 @@ header {
         align-items: flex-start;
     }
 
+    .controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Put subdivisions and time signature side by side on mobile */
+    .selector-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .selector-row .control-group {
+        flex: 1;
+        min-width: 0;
+    }
+
     .beat-circle {
         width: 100px;
         height: 100px;
