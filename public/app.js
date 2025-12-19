@@ -135,6 +135,16 @@ class Metronome {
             this.bpm = state.bpm;
             this.elements.bpmValue.textContent = this.bpm;
             this.elements.bpmSlider.value = this.bpm;
+
+            // Restart interval with new timing if currently playing
+            if (this.isPlaying) {
+                clearInterval(this.intervalId);
+                this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
+                // Reset counts to sync timing across devices
+                this.beatCount = 0;
+                this.subdivisionCount = 0;
+                this.updateBeatDisplay();
+            }
         }
 
         if (state.timeSignature !== undefined) {
@@ -352,6 +362,10 @@ class Metronome {
         if (this.isPlaying) {
             clearInterval(this.intervalId);
             this.intervalId = setInterval(() => this.tick(), this.getTickInterval());
+            // Reset counts when BPM changes to sync timing across devices
+            this.beatCount = 0;
+            this.subdivisionCount = 0;
+            this.updateBeatDisplay();
         }
 
         this.broadcastState();
