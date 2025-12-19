@@ -27,6 +27,11 @@ function metronome() {
 		currentSubdivision: 0,
 		copyButtonText: "Copy Link",
 
+		// QR Modal state
+		showQrModal: false,
+		qrCodeDataUrl: null,
+		connectionFeedback: false,
+
 		// Services (will be initialized)
 		timingService: null,
 		audioService: null,
@@ -77,6 +82,10 @@ function metronome() {
 			return this.wsConnected ? "Connected" : "Disconnected";
 		},
 
+		get qrButtonText() {
+			return "Show QR Code";
+		},
+
 		// Initialization method (called by Alpine.js x-init)
 		init() {
 			this.initRoom();
@@ -121,6 +130,7 @@ function metronome() {
 				(connected) => {
 					this.wsConnected = connected;
 				},
+				() => this.handleNewConnection(),
 			);
 			this.wsManager.connect();
 		},
@@ -349,16 +359,57 @@ function metronome() {
 			}, 3000);
 		},
 
-		// Copy shareable link
-		async copyLink() {
+		// QR Code modal functionality
+		async showQrCode() {
 			if (!this.wsManager) return;
-			const success = await this.wsManager.copyShareableUrl(this.mode);
-			if (success) {
-				const originalText = this.copyButtonText;
-				this.copyButtonText = "Copied!";
+			const url = this.wsManager.generateShareableUrl(this.mode);
+			// Create QR code as canvas
+			const canvas = document.createElement('canvas');
+			QrCreator.render({
+				text: url,
+				radius: 0.5,
+				ecLevel: 'M',
+				fill: '#000000',
+				background: '#FFFFFF',
+				size: 256
+			}, canvas);
+			this.qrCodeDataUrl = canvas.toDataURL();
+			this.showQrModal = true;
+		},
+
+		closeQrModal() {
+			this.showQrModal = false;
+			this.qrCodeDataUrl = null;
+			this.connectionFeedback = false;
+		},
+
+		async copyUrlFromModal() {
+			if (!this.wsManager) return;
+			const url = this.wsManager.generateShareableUrl(this.mode);
+			await navigator.clipboard.writeText(url);
+			// Brief success feedback (reuse existing pattern)
+			const originalText = this.copyButtonText;
+			this.copyButtonText = "Copied!";
+			setTimeout(() => {
+				this.copyButtonText = originalText;
+			}, 1000);
+		},
+
+		handleNewConnection() {
+			if (this.showQrModal) {
+				this.connectionFeedback = true;
+				// Highlight connection status briefly
 				setTimeout(() => {
-					this.copyButtonText = originalText;
-				}, 1000);
+					this.closeQrModal();
+				}, 1500);
+			}
+			// Highlight connection status when someone joins via QR
+			const connectionStatusEl = document.querySelector('.connection-status');
+			if (connectionStatusEl) {
+				connectionStatusEl.classList.add('new-connection');
+				setTimeout(() => {
+					connectionStatusEl.classList.remove('new-connection');
+				}, 1500);
 			}
 		},
 	};

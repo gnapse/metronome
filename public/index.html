@@ -6,6 +6,7 @@
         <title>Remote Metronome</title>
         <link rel="stylesheet" href="style.css" />
         <script type="module" src="app.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/qr-creator@1.0.0/dist/qr-creator.min.js"></script>
         <script
             src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
             defer
@@ -22,8 +23,8 @@
                         class="mode-indicator remote"
                         >(Remote Control)</span
                     >
-                    <button @click="copyLink()" x-text="copyButtonText">
-                        Copy Link
+                    <button @click="showQrCode()" x-text="qrButtonText">
+                        Show QR Code
                     </button>
                 </div>
                 <div
@@ -126,6 +127,38 @@
                     </div>
                 </div>
             </main>
+
+            <!-- QR Code Modal -->
+            <div x-show="showQrModal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="qr-modal-overlay"
+                 @click="closeQrModal()"
+                 @keydown.escape="closeQrModal()">
+
+                <div class="qr-modal" @click.stop>
+                    <div class="qr-modal-header">
+                        <h3>Scan to Connect</h3>
+                        <button @click="closeQrModal()" class="qr-close-btn">×</button>
+                    </div>
+
+                    <div class="qr-code-container">
+                        <img x-bind:src="qrCodeDataUrl" alt="QR Code" class="qr-code" />
+                        <div x-show="connectionFeedback" class="connection-success">
+                            ✓ New device connected!
+                        </div>
+                    </div>
+
+                    <div class="qr-modal-footer">
+                        <p class="qr-url-text" x-text="wsManager?.generateShareableUrl(mode)"></p>
+                        <button @click="copyUrlFromModal()" class="qr-copy-btn">Copy URL</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
