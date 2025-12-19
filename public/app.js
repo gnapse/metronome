@@ -140,11 +140,18 @@ class Metronome {
         if (state.timeSignature !== undefined) {
             this.timeSignature = state.timeSignature;
             this.elements.timeSignature.value = this.timeSignature;
+            // Reset counts when time signature changes to sync timing
+            this.beatCount = 0;
+            this.subdivisionCount = 0;
+            this.updateBeatDisplay();
         }
 
         if (state.subdivisions !== undefined) {
             this.subdivisions = state.subdivisions;
             this.elements.subdivisions.value = this.subdivisions;
+            this.updateSubdivisionDisplay();
+            // Reset subdivision count when subdivisions change to sync timing
+            this.subdivisionCount = 0;
         }
 
         if (state.playing !== undefined) {

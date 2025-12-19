@@ -52,7 +52,7 @@ function getOrCreateRoom(roomId) {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, {
       clients: new Set(),
-      state: { bpm: 120, playing: false, timeSignature: '4/4' }
+      state: { bpm: 120, playing: false, timeSignature: '4/4', subdivisions: 'quarter' }
     });
   }
   return rooms.get(roomId);
