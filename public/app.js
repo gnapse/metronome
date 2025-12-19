@@ -40,6 +40,10 @@ class Metronome {
             playPause: document.getElementById('play-pause'),
             bpmValue: document.getElementById('bpm-value'),
             bpmSlider: document.getElementById('bpm-slider'),
+            tempoMinus5: document.getElementById('tempo-minus-5'),
+            tempoMinus1: document.getElementById('tempo-minus-1'),
+            tempoPlus1: document.getElementById('tempo-plus-1'),
+            tempoPlus5: document.getElementById('tempo-plus-5'),
             timeSignature: document.getElementById('time-signature'),
             subdivisions: document.getElementById('subdivisions'),
             tapTempo: document.getElementById('tap-tempo'),
@@ -86,6 +90,11 @@ class Metronome {
         this.elements.bpmSlider.oninput = (e) => {
             this.setBpm(parseInt(e.target.value));
         };
+
+        this.elements.tempoMinus5.onclick = () => this.setBpm(this.bpm - 5);
+        this.elements.tempoMinus1.onclick = () => this.setBpm(this.bpm - 1);
+        this.elements.tempoPlus1.onclick = () => this.setBpm(this.bpm + 1);
+        this.elements.tempoPlus5.onclick = () => this.setBpm(this.bpm + 5);
 
         this.elements.timeSignature.onchange = (e) => {
             this.setTimeSignature(e.target.value);

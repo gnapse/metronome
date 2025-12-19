@@ -25,17 +25,21 @@
                     </div>
                 </div>
 
-                <div class="bpm-display">
-                    <div class="bpm-value" id="bpm-value">120</div>
-                    <div class="bpm-label">BPM</div>
-                </div>
             </div>
 
             <div class="controls">
                 <button id="play-pause" class="control-btn primary">Play</button>
 
                 <div class="control-group">
-                    <label for="bpm-slider">Tempo</label>
+                    <div class="tempo-controls">
+                        <button class="tempo-btn" id="tempo-minus-5">-5</button>
+                        <button class="tempo-btn" id="tempo-minus-1">-</button>
+                        <div class="tempo-display">
+                            <span>Tempo: <span id="bpm-value">120</span> bpm</span>
+                        </div>
+                        <button class="tempo-btn" id="tempo-plus-1">+</button>
+                        <button class="tempo-btn" id="tempo-plus-5">+5</button>
+                    </div>
                     <input type="range" id="bpm-slider" min="40" max="220" value="120">
                     <button id="tap-tempo" class="control-btn">Tap Tempo</button>
                 </div>
