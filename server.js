@@ -52,7 +52,28 @@ function getLocalNetworkIP() {
 
 // WebSocket setup - EXACT logic preservation from legacy/server.js
 const wss = new WebSocketServer({ server });
-const rooms = new Map(); // roomId -> { clients: Set<WebSocket>, state: {bpm, playing, timeSignature, subdivisions} }
+const rooms = new Map(); // roomId -> { clients: Set<WebSocket>, state, lastActivity: timestamp }
+
+const ROOM_TTL_MS = 60 * 60 * 1000; // 60 minutes
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // Run cleanup every 5 minutes
+
+function cleanupStaleRooms() {
+  const now = Date.now();
+  let cleaned = 0;
+  for (const [roomId, room] of rooms) {
+    if (now - room.lastActivity > ROOM_TTL_MS) {
+      // Close any remaining connections
+      room.clients.forEach(client => client.close(1000, 'Room expired'));
+      rooms.delete(roomId);
+      cleaned++;
+    }
+  }
+  if (cleaned > 0) {
+    console.log(`Cleaned up ${cleaned} stale room(s), ${rooms.size} remaining`);
+  }
+}
+
+setInterval(cleanupStaleRooms, CLEANUP_INTERVAL_MS);
 
 function getRoomId(req) {
   const query = parseUrl(req.url, true).query;
@@ -63,10 +84,15 @@ function getOrCreateRoom(roomId) {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, {
       clients: new Set(),
-      state: { bpm: 120, playing: false, timeSignature: '4/4', subdivisions: 'quarter' }
+      state: { bpm: 120, playing: false, timeSignature: '4/4', subdivisions: 'quarter' },
+      lastActivity: Date.now()
     });
   }
   return rooms.get(roomId);
+}
+
+function touchRoom(room) {
+  room.lastActivity = Date.now();
 }
 
 function broadcastToRoom(roomId, message, sender = null) {
@@ -92,6 +118,7 @@ wss.on('connection', (ws, req) => {
   const room = getOrCreateRoom(roomId);
   room.clients.add(ws);
   ws.roomId = roomId;
+  touchRoom(room);
 
   if (isNewRoom) {
     console.log(`Room created: ${roomId}`);
@@ -112,8 +139,9 @@ wss.on('connection', (ws, req) => {
       const message = JSON.parse(data);
 
       if (message.type === 'state') {
-        // Update room state
+        // Update room state and activity timestamp
         Object.assign(room.state, message);
+        touchRoom(room);
         // Broadcast to other clients in room
         broadcastToRoom(roomId, message, ws);
       }
