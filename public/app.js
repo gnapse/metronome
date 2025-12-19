@@ -370,8 +370,8 @@ class Metronome {
 
         // Advance beat count only on main beats
         if (isMainBeat) {
+            this.updateBeatDisplay(); // Update display before incrementing
             this.beatCount = (this.beatCount + 1) % beatsPerMeasure;
-            this.updateBeatDisplay();
         }
     }
 
