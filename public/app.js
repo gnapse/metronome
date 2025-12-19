@@ -4,6 +4,8 @@
  * Integrates timing, audio, and WebSocket services
  */
 
+/// <reference path="./types.d.ts" />
+
 import { AudioService } from "./js/audio.js";
 import { TimingService } from "./js/timing.js";
 import { WebSocketManager } from "./js/websocket.js";
@@ -12,38 +14,62 @@ import { generateRoomId, parseUrlParams, updateUrl } from "./js/utils.js";
 function metronome() {
 	return {
 		// Core reactive state
+		/** @type {number} */
 		bpm: 120,
+		/** @type {string} */
 		timeSignature: "4/4",
+		/** @type {string} */
 		subdivisions: "quarter",
+		/** @type {boolean} */
 		isPlaying: false,
+		/** @type {number} */
 		beatCount: -1,
+		/** @type {number} */
 		subdivisionCount: 0,
 
 		// UI state
+		/** @type {string} */
 		mode: "normal",
+		/** @type {string | null} */
 		roomId: null,
+		/** @type {boolean} */
 		wsConnected: false,
+		/** @type {boolean} */
 		beatActive: false,
+		/** @type {number} */
 		currentSubdivision: 0,
 
 		// QR Modal state
+		/** @type {boolean} */
 		showQrModal: false,
+		/** @type {string | null} */
 		qrCodeDataUrl: null,
+		/** @type {boolean} */
 		connectionFeedback: false,
+		/** @type {string} */
 		copyUrlText: "Copy URL",
 
 		// Services (will be initialized)
+		/** @type {typeof TimingService | null} */
 		timingService: null,
+		/** @type {AudioService | null} */
 		audioService: null,
 		/** @type {WebSocketManager | null} */
 		wsManager: null,
 
 		// Timing control
+		/** @type {ReturnType<typeof setInterval> | null} */
 		intervalId: null,
 
 		// Tap tempo state
+		/** @type {number | null} */
 		lastTapTime: null,
+		/** @type {number[]} */
 		tapTimes: [],
+
+		// Guard for double init
+		/** @type {boolean | undefined} */
+		_initialized: undefined,
 
 		// Computed properties (Alpine.js getters)
 		get subdivisionMultiplier() {
@@ -123,6 +149,7 @@ function metronome() {
 		// WebSocket initialization
 		initWebSocket() {
 			if (this.wsManager) return;
+			if (!this.roomId) return; // Guard for TypeScript
 			this.wsManager = new WebSocketManager(
 				this.roomId,
 				(state) => this.updateFromRemote(state),
@@ -134,6 +161,7 @@ function metronome() {
 			this.wsManager.connect();
 		},
 
+		/** @param {{ bpm?: number; playing?: boolean; timeSignature?: string; subdivisions?: string }} state */
 		updateFromRemote(state) {
 			let timingChanged = false;
 
@@ -230,6 +258,7 @@ function metronome() {
 		},
 
 		tick() {
+			if (!this.timingService) return;
 			// Check if this is a main beat (quarter note)
 			const isMainBeat = this.timingService.isMainBeat(
 				this.subdivisionCount,
@@ -264,9 +293,12 @@ function metronome() {
 			this.playClick(isMainBeat);
 		},
 
-		// Play click sound
+		/**
+		 * Play click sound
+		 * @param {boolean} isMainBeat
+		 */
 		playClick(isMainBeat) {
-			if (!this.audioService) return;
+			if (!this.audioService || !this.timingService) return;
 
 			const frequency = this.timingService.calculateBeatFrequency(
 				this.beatCount,
@@ -293,7 +325,9 @@ function metronome() {
 			}
 		},
 
+		/** @param {number} newBpm */
 		setBpm(newBpm) {
+			if (!this.timingService) return;
 			this.bpm = this.timingService.validateBpm(newBpm);
 
 			if (this.isPlaying) {
@@ -304,17 +338,22 @@ function metronome() {
 			this.broadcastState();
 		},
 
-		// Adjust BPM by delta
+		/**
+		 * Adjust BPM by delta
+		 * @param {number} delta
+		 */
 		adjustBpm(delta) {
 			this.setBpm(this.bpm + delta);
 		},
 
+		/** @param {string} newTimeSignature */
 		setTimeSignature(newTimeSignature) {
 			this.timeSignature = newTimeSignature;
 			this.resetBeatCount();
 			this.broadcastState();
 		},
 
+		/** @param {string} newSubdivisions */
 		setSubdivisions(newSubdivisions) {
 			this.subdivisions = newSubdivisions;
 			this.subdivisionCount = 0; // Reset subdivision count
@@ -328,6 +367,7 @@ function metronome() {
 		},
 
 		tapTempo() {
+			if (!this.timingService) return;
 			const now = Date.now();
 
 			if (this.lastTapTime) {
@@ -351,7 +391,7 @@ function metronome() {
 
 			// Reset if no tap for 3 seconds
 			setTimeout(() => {
-				if (Date.now() - this.lastTapTime >= 3000) {
+				if (this.lastTapTime && Date.now() - this.lastTapTime >= 3000) {
 					this.tapTimes = [];
 					this.lastTapTime = null;
 				}

@@ -3,6 +3,10 @@
  */
 
 export const TimingService = {
+	/**
+	 * @param {string} subdivisions
+	 * @returns {1 | 2 | 3 | 4}
+	 */
 	getSubdivisionMultiplier(subdivisions) {
 		switch (subdivisions) {
 			case "quarter":
@@ -18,6 +22,11 @@ export const TimingService = {
 		}
 	},
 
+	/**
+	 * @param {number} bpm
+	 * @param {string} subdivisions
+	 * @returns {number}
+	 */
 	calculateTickInterval(bpm, subdivisions) {
 		const multiplier = this.getSubdivisionMultiplier(subdivisions);
 		return 60000 / bpm / multiplier;
@@ -25,6 +34,8 @@ export const TimingService = {
 
 	/**
 	 * Parse time signature into beats and note value
+	 * @param {string} timeSignature
+	 * @returns {{ beats: number; noteValue: number }}
 	 */
 	parseTimeSignature(timeSignature) {
 		const [beats, noteValue] = timeSignature.split("/").map(Number);
@@ -49,6 +60,9 @@ export const TimingService = {
 
 	/**
 	 * Determine if current subdivision count represents a main beat
+	 * @param {number} subdivisionCount
+	 * @param {string} subdivisions
+	 * @returns {boolean}
 	 */
 	isMainBeat(subdivisionCount, subdivisions) {
 		const multiplier = this.getSubdivisionMultiplier(subdivisions);
@@ -57,6 +71,9 @@ export const TimingService = {
 
 	/**
 	 * Calculate current subdivision within a beat
+	 * @param {number} subdivisionCount
+	 * @param {string} subdivisions
+	 * @returns {number}
 	 */
 	getCurrentSubdivision(subdivisionCount, subdivisions) {
 		const multiplier = this.getSubdivisionMultiplier(subdivisions);
@@ -65,6 +82,9 @@ export const TimingService = {
 
 	/**
 	 * Advance beat count with proper wrapping
+	 * @param {number} currentBeatCount
+	 * @param {string} timeSignature
+	 * @returns {number}
 	 */
 	advanceBeatCount(currentBeatCount, timeSignature) {
 		const { beats } = this.parseTimeSignature(timeSignature);
@@ -73,14 +93,18 @@ export const TimingService = {
 
 	/**
 	 * Validate BPM within reasonable bounds
+	 * @param {number} bpm
+	 * @returns {number}
 	 */
 	validateBpm(bpm) {
-		const numericBpm = parseInt(bpm, 10);
+		const numericBpm = typeof bpm === 'string' ? parseInt(bpm, 10) : Math.round(bpm);
 		return Math.max(40, Math.min(220, numericBpm));
 	},
 
 	/**
 	 * Calculate tap tempo BPM from array of tap intervals
+	 * @param {number[]} tapTimes
+	 * @returns {number | null}
 	 */
 	calculateTapTempoBpm(tapTimes) {
 		if (tapTimes.length < 1) return null;
