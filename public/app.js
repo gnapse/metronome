@@ -7,7 +7,7 @@
 import { AudioService } from "./js/audio.js";
 import { TimingService } from "./js/timing.js";
 import { WebSocketManager } from "./js/websocket.js";
-import { generateRoomId, parseUrlParams, redirectToRoom } from "./js/utils.js";
+import { generateRoomId, parseUrlParams, updateUrl } from "./js/utils.js";
 
 function metronome() {
 	return {
@@ -86,8 +86,11 @@ function metronome() {
 			return "Show QR Code";
 		},
 
-		// Initialization method (called by Alpine.js x-init)
+		// Initialization method (called automatically by Alpine.js)
+		// Guard needed because Alpine calls init() twice in some cases
 		init() {
+			if (this._initialized) return;
+			this._initialized = true;
 			this.initRoom();
 			this.initServices();
 			this.initWebSocket();
@@ -108,10 +111,9 @@ function metronome() {
 			}
 
 			if (!this.roomId) {
-				// Generate random room ID and redirect
+				// Generate random room ID and update URL without reloading
 				this.roomId = generateRoomId();
-				redirectToRoom(this.roomId, this.mode);
-				return;
+				updateUrl(this.roomId, this.mode);
 			}
 		},
 
@@ -124,6 +126,7 @@ function metronome() {
 
 		// WebSocket initialization
 		initWebSocket() {
+			if (this.wsManager) return;
 			this.wsManager = new WebSocketManager(
 				this.roomId,
 				(state) => this.updateFromRemote(state),

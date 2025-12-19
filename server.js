@@ -88,9 +88,16 @@ wss.on('connection', (ws, req) => {
     return;
   }
 
+  const isNewRoom = !rooms.has(roomId);
   const room = getOrCreateRoom(roomId);
   room.clients.add(ws);
   ws.roomId = roomId;
+
+  if (isNewRoom) {
+    console.log(`Room created: ${roomId}`);
+  } else {
+    console.log(`Client joined room: ${roomId} (${room.clients.size} clients)`);
+  }
 
   // Send current state to new client
   ws.send(JSON.stringify({ type: 'state', networkIP: getLocalNetworkIP(), ...room.state }));
@@ -113,8 +120,10 @@ wss.on('connection', (ws, req) => {
   ws.on('close', () => {
     if (room) {
       room.clients.delete(ws);
+      console.log(`Client left room: ${roomId} (${room.clients.size} remaining)`);
       if (room.clients.size === 0) {
         rooms.delete(roomId);
+        console.log(`Room deleted: ${roomId}`);
       }
     }
   });

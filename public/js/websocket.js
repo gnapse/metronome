@@ -22,6 +22,7 @@ export class WebSocketManager {
    * From legacy app.js lines 86-110
    */
   connect() {
+    if (this.ws) return;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}?room=${this.roomId}`;
 

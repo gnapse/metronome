@@ -41,7 +41,7 @@ export function updateUrl(roomId, mode) {
  */
 export function redirectToRoom(roomId, mode = 'normal') {
   const modeParam = mode === 'remote' ? '&mode=remote' : '';
-  window.location.href = `${window.location.origin}${window.location.pathname}?room=${roomId}${modeParam}`;
+  window.location.replace(`${window.location.origin}${window.location.pathname}?room=${roomId}${modeParam}`);
 }
 
 /**
