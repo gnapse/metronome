@@ -12,16 +12,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = createServer(app);
 
-// Enhanced HTTP handling with security and compression
+// Enhanced HTTP handling with security and compression (relaxed for local development)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      connectSrc: ["'self'", "ws:", "wss:"]
+      connectSrc: ["'self'", "ws:", "wss:"],
+      upgradeInsecureRequests: null  // Explicitly disable HTTPS upgrades for network IP access
     }
-  }
+  },
+  // Disable problematic headers for local network IP access
+  crossOriginOpenerPolicy: false,
+  originAgentCluster: false,
+  hsts: false,  // Don't force HTTPS - critical for network IP access
+  contentTypeOptions: false // Allow flexible content types
 }));
 app.use(compression());
 
